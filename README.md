@@ -143,6 +143,8 @@ echo $g->decrypt($argv[1]) . PHP_EOL;
 ' 'BASE64_CIPHERTEXT_HERE'
 ````
 
+<img width="972" height="131" alt="image" src="https://github.com/user-attachments/assets/13561940-7d45-436a-9221-e97361fb8a59" />
+
 <img width="1901" height="307" alt="image" src="https://github.com/user-attachments/assets/2a6fd2fe-16d3-4667-ac3b-5c8aa7393350" />
 
 
