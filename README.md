@@ -134,6 +134,16 @@ rootdn_passwd is avrqW65aZWKzLAKWhPxZGn1eLj3yYAnwUp08mEazsJUWfI5cqbaP6vM12w0p/yk
 Hashid does not know what this is but keep hold of it:
 <img width="902" height="60" alt="image" src="https://github.com/user-attachments/assets/0ccbb128-277f-4578-b3b4-1e61a13089c1" />
 
-We would do good looking at the source code for glpi. Doing that we found this 
+We would do good looking at the source code for glpi. Doing that we found /opt/glpi/src/GLPIKey.php, that tells us that the encryption type used for this password is sodium_crypto_aead_chacha20poly1305_ietf and also how to decrypt the data we found as rootdn_passwd.
+````
+php -r '
+require "/opt/glpi/src/GLPIKey.php";
+$g = new GLPIKey("/opt/glpi/config");
+echo $g->decrypt($argv[1]) . PHP_EOL;
+' 'BASE64_CIPHERTEXT_HERE'
+````
+
+<img width="1901" height="307" alt="image" src="https://github.com/user-attachments/assets/2a6fd2fe-16d3-4667-ac3b-5c8aa7393350" />
+
 
 
