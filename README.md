@@ -131,16 +131,37 @@ $
 ````
 rootdn_passwd is avrqW65aZWKzLAKWhPxZGn1eLj3yYAnwUp08mEazsJUWfI5cqbaP6vM12w0p/ykpmyO3Pw==
 
-Hashid does not know what this is but keep hold of it:
+Hashid does not know what this is but, it seems like base 64. Do keep hold of it:
 <img width="902" height="60" alt="image" src="https://github.com/user-attachments/assets/0ccbb128-277f-4578-b3b4-1e61a13089c1" />
 
-We would do good looking at the source code for glpi. Doing that we found /opt/glpi/src/GLPIKey.php, that tells us that the encryption type used for this password is sodium_crypto_aead_chacha20poly1305_ietf and also how to decrypt the data we found as rootdn_passwd.
+This is a binary key for cryptography
+<img width="423" height="40" alt="image" src="https://github.com/user-attachments/assets/b2c56503-d850-4208-bd5c-dd591e85cb93" />
+
+
+We would do good looking at the source code for glpi. Doing that we found /opt/glpi/src/GLPIKey.php, that tells us that the encryption type used for this password is sodium_crypto_aead_chacha20poly1305_ietf and also how to decrypt the data we found as rootdn_passwd, including nonce size, key format.
+
+For example, this tells us exactly how the excryption process works:
+````
+    try {
+            $plaintext = sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
+                $ciphertext,
+                $nonce,
+                $nonce,
+                $key
+            );
+            return $plaintext;
+
+````
+To decrypt the hash just cp this into your terminal:
 ````
 php -r '
-require "/opt/glpi/src/GLPIKey.php";
-$g = new GLPIKey("/opt/glpi/config");
-echo $g->decrypt($argv[1]) . PHP_EOL;
-' 'BASE64_CIPHERTEXT_HERE'
+$k=file_get_contents("/opt/glpi/config/glpicrypt.key");
+$v=base64_decode("avrqW65aZWKzLAKWhPxZGn1eLj3yYAnwUp08mEazsJUWfI5cqbaP6vM12w0p/ykpmyO3Pw==");
+$nonce=substr($v,0,24);
+$ct=substr($v,24);
+$pt=sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($ct,$nonce,$nonce,$k);
+echo $pt, PHP_EOL;
+'
 ````
 
 <img width="972" height="131" alt="image" src="https://github.com/user-attachments/assets/13561940-7d45-436a-9221-e97361fb8a59" />
